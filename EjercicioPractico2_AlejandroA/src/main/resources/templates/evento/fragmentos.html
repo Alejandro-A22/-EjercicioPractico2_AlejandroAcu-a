@@ -1,0 +1,92 @@
+<!-- 1 Sección para crear el boton de agregar... llamará a una ventana modal-->
+<section th:fragment="botonesAgregarEvento" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3" sec:authorize="hasRole('ROLE_ADMIN')">
+                <button 
+                    type="button" 
+                    class="btn btn-primary btn-block" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#agregarEvento">
+                    <i class="fas fa-plus"></i> [[#{evento.agregar}]]
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2 Fragmento para agregar evento, es la ventana modal -->
+<section th:fragment="agregarEvento">
+    <div id="agregarEvento" 
+         class="modal fade" 
+         tabindex="-1" 
+         aria-labelledby="exampleModalLabel" 
+         aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">[[#{evento.agregar}]]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> 
+                <form th:action="@{/evento/guardar}" th:object="${evento}"
+                      method="POST" class="was-validated" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nombre">[[#{evento.nombre}]]</label>
+                            <input type="text" class="form-control" name="nombre" required="true"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion">[[#{evento.descripcion}]]</label>
+                            <textarea class="form-control" name="descripcion" required="true"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaInicio">[[#{evento.fechaInicio}]]</label>
+                            <input type="date" class="form-control" name="fechaInicio" required="true"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaFin">[[#{evento.fechaFin}]]</label>
+                            <input type="date" class="form-control" name="fechaFin" required="true"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imagen">[[#{evento.rutaImagen}]]</label>
+                            <input class="form-control" type="file" name="imagenFile" onchange="readURL(this);"/>
+                            <img id="blah" src="#" alt="your image" height="200"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3 Sección principal para mostrar la informaccion de la entidad evento -->
+<section th:fragment="listadoEventos" id="eventos">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>[[#{evento.listado}]]</h4>
+                    </div>
+                    <div th:if="${eventos != null and !eventos.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr><th>#</th>
+                                    <th>[[#{evento.nombre}]]</th>
+                                    <th>[[#{evento.descripcion}]]</th>
+                                    <th>[[#{evento.fechaInicio}]]</th>
+                                    <th>[[#{evento.fechaFin}]]</th>
+                                    <th sec:authorize="hasRole('ROLE_ADMIN')"></th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="evento, contador : ${eventos}">
+                                    <td>[[${contador.count}]]</td>
+                                    <td>[[${evento.nombre}]]</td>
+                                    <td>[[${evento.descripcion}]]</td>
+                                    <td>[[${evento.fechaInicio}]]</td>
+                                    <td>[[${evento.fechaFin}]]</td>
+                                    <td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/evento/eliminar/}+${evento.idEvento}"
+                                                   class="
